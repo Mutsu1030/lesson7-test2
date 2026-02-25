@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>QRコード生成ツール</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <h1>QRコード生成ツール</h1>
+
+  <form method="POST">
+    <label>テキスト（最大500文字）
+      <input type="text" name="text" maxlength="500" required value="{{ text|default('') }}">
+    </label>
+
+    <label>サイズ（ピクセル）
+      <input type="number" name="size" min="100" max="1024" value="{{ size|default(300) }}">
+    </label>
+
+    <label>余白（border）
+      <input type="number" name="border" min="1" max="20" value="{{ border|default(4) }}">
+    </label>
+
+    <label>誤り訂正レベル
+      <select name="error">
+        {% for level in ['L','M','Q','H'] %}
+        <option value="{{level}}" {% if error==level %}selected{% endif %}>
+          {{level}}
+        </option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <button type="submit">QR生成</button>
+  </form>
+
+  {% if error_msg %}
+    <div class="error">{{ error_msg }}</div>
+  {% endif %}
+
+  {% if qr_data %}
+    <div class="qr">
+      <h2>生成結果</h2>
+      <img src="data:image/png;base64,{{ qr_data }}" alt="QRコード">
+      <a href="data:image/png;base64,{{ qr_data }}" download="qrcode.png">
+        画像をダウンロード
+      </a>
+    </div>
+  {% endif %}
+</body>
+</html>
